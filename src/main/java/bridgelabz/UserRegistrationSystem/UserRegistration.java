@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UserRegistration {
+
 	private static final Logger LOG = LogManager.getLogger(UserRegistration.class);
 
 	/**
@@ -27,7 +28,15 @@ public class UserRegistration {
 	 * @return
 	 * @throws Exception
 	 */
-	static IValidateFunction validateFunction = (String name, InputField field) -> {
+	public IValidateFunction iValidateFunction = (name, field) -> {
+		try {
+			return validateFunction(name, field);
+		} catch (UserRegistrationException e) {
+			throw new UserRegistrationException(e.getMessage());
+		}
+	};
+
+	private boolean validateFunction(String name, InputField field) throws UserRegistrationException {
 		try {
 			String regex = null;
 			if (null != field) {
@@ -64,27 +73,28 @@ public class UserRegistration {
 			return false;
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
+			throw new UserRegistrationException(e.getMessage());
 		}
-		return false;
 	};
 
 	public static void main(String[] args) throws UserRegistrationException {
+		UserRegistration userRegistration = new UserRegistration();
 		Scanner sc = new Scanner(System.in);
 		LOG.info("Enter first name");
 		String fn = sc.nextLine();
-		validateFunction.validate(fn, InputField.FIRST_NAME);
+		userRegistration.iValidateFunction.validate(fn, InputField.FIRST_NAME);
 		LOG.info("Enter last name");
 		String ln = sc.nextLine();
-		validateFunction.validate(ln, InputField.LAST_NAME);
+		userRegistration.iValidateFunction.validate(ln, InputField.LAST_NAME);
 		LOG.info("Enter email");
 		String email = sc.nextLine();
-		validateFunction.validate(email, InputField.EMAIL);
+		userRegistration.iValidateFunction.validate(email, InputField.EMAIL);
 		LOG.info("Enter phone number");
 		String phno = sc.nextLine();
-		validateFunction.validate(phno, InputField.PHONE_NO);
+		userRegistration.iValidateFunction.validate(phno, InputField.PHONE_NO);
 		LOG.info("Enter password");
 		String password = sc.nextLine();
-		validateFunction.validate(password, InputField.PASSWORD);
+		userRegistration.iValidateFunction.validate(password, InputField.PASSWORD);
 		sc.close();
 	}
 }
